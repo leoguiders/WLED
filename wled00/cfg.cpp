@@ -636,7 +636,7 @@ bool deserializeConfig(JsonObject doc, bool fromFS) {
   return (doc["sv"] | true);
 }
 
-static const char s_cfg_json[] PROGMEM = "/cfg.json";
+static const char s_cfg_json[] = "/cfg.json";
 
 bool backupConfig() {
   return backupFile(s_cfg_json);
@@ -1117,7 +1117,7 @@ void serializeConfig() {
   JsonObject usermods_settings = root.createNestedObject("um");
   UsermodManager::addToConfig(usermods_settings);
 
-  File f = WLED_FS.open(FPSTR(s_cfg_json), "w");
+  File f = WLED_FS.open(s_cfg_json, "w");
   if (f) serializeJson(root, f);
   f.close();
   releaseJSONBufferLock();
@@ -1126,7 +1126,7 @@ void serializeConfig() {
 }
 
 
-static const char s_wsec_json[] PROGMEM = "/wsec.json";
+static const char s_wsec_json[] = "/wsec.json";
 
 //settings in /wsec.json, not accessible via webserver, for passwords and tokens
 bool deserializeConfigSec() {
@@ -1217,7 +1217,7 @@ void serializeConfigSec() {
   ota[F("lock-wifi")] = wifiLock;
   ota[F("aota")] = aOtaEnabled;
 
-  File f = WLED_FS.open(FPSTR(s_wsec_json), "w");
+  File f = WLED_FS.open(s_wsec_json, "w");
   if (f) serializeJson(root, f);
   f.close();
   releaseJSONBufferLock();

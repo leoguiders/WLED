@@ -416,7 +416,10 @@ void prepareArtnetPollReply(ArtPollReply *reply) {
 
   reply->reply_port = ARTNET_DEFAULT_PORT;
 
-  char * numberEnd = (char*) versionString; // strtol promises not to try to edit this.
+  char verBuf[WLED_VERSION_MAX_LEN];
+  strncpy_P(verBuf, versionString, sizeof(verBuf) - 1);
+  verBuf[sizeof(verBuf) - 1] = '\0';
+  char * numberEnd = verBuf; // strtol promises not to try to edit this.
   reply->reply_version_h = (uint8_t)strtol(numberEnd, &numberEnd, 10);
   numberEnd++;
   reply->reply_version_l = (uint8_t)strtol(numberEnd, &numberEnd, 10);

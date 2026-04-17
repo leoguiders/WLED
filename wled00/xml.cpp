@@ -42,10 +42,17 @@ void fillWLEDVersion(char *buf, size_t len)
 {
   if (!buf || len == 0) return;
 
+  char verBuf[WLED_VERSION_MAX_LEN];
+  char relBuf[WLED_RELEASE_NAME_MAX_LEN];
+  strncpy_P(verBuf, versionString, sizeof(verBuf) - 1);
+  verBuf[sizeof(verBuf) - 1] = '\0';
+  strncpy_P(relBuf, releaseString, sizeof(relBuf) - 1);
+  relBuf[sizeof(relBuf) - 1] = '\0';
+
   snprintf_P(buf,len,PSTR("WLED %s (%d)<br>\\\"%s\\\"<br>(Processor: %s)"),
-    versionString,
+    verBuf,
     VERSION,
-    releaseString,
+    relBuf,
   #if defined(ARDUINO_ARCH_ESP32)
     ESP.getChipModel()
   #else

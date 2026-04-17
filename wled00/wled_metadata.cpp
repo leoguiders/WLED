@@ -133,6 +133,14 @@ bool shouldAllowOTA(const wled_metadata_t& firmwareDescription, char* errorMessa
     errorMessage[0] = '\0';
   }
 
+  // Copy our build strings from flash to RAM for safe byte-level access
+  char ourRelease[WLED_RELEASE_NAME_MAX_LEN];
+  char ourVersion[WLED_VERSION_MAX_LEN];
+  strncpy_P(ourRelease, releaseString, sizeof(ourRelease) - 1);
+  ourRelease[sizeof(ourRelease) - 1] = '\0';
+  strncpy_P(ourVersion, versionString, sizeof(ourVersion) - 1);
+  ourVersion[sizeof(ourVersion) - 1] = '\0';
+
   // Validate compatibility using extracted release name
   // We make a stack copy so we can print it safely
   char safeFirmwareRelease[WLED_RELEASE_NAME_MAX_LEN];
@@ -143,10 +151,10 @@ bool shouldAllowOTA(const wled_metadata_t& firmwareDescription, char* errorMessa
     return false;
   }  
 
-  if (strncmp_P(safeFirmwareRelease, releaseString, WLED_RELEASE_NAME_MAX_LEN) != 0) {
+  if (strncmp(safeFirmwareRelease, ourRelease, WLED_RELEASE_NAME_MAX_LEN) != 0) {
     if (errorMessage && errorMessageLen > 0) {
       snprintf_P(errorMessage, errorMessageLen, PSTR("Firmware release name mismatch: current='%s', uploaded='%s'."), 
-               releaseString, safeFirmwareRelease);
+               ourRelease, safeFirmwareRelease);
       errorMessage[errorMessageLen - 1] = '\0'; // Ensure null termination
     }
     return false;
@@ -155,7 +163,7 @@ bool shouldAllowOTA(const wled_metadata_t& firmwareDescription, char* errorMessa
   if (firmwareDescription.desc_version > 1) {
     // Add safe version check
     // Parse our version (x.y.z) and compare it to the "safe version" array
-    const char* our_version = versionString;
+    const char* our_version = ourVersion;
     for(unsigned v_index = 0; v_index < 3; ++v_index) {
       char* our_version_end = nullptr;
       long our_v_parsed = strtol(our_version, &our_version_end, 10); 
@@ -169,7 +177,7 @@ bool shouldAllowOTA(const wled_metadata_t& firmwareDescription, char* errorMessa
         if (errorMessage && errorMessageLen > 0) {
           snprintf_P(errorMessage, errorMessageLen, PSTR("Cannot update from this version: requires at least %d.%d.%d, current='%s'."), 
                   firmwareDescription.safe_update_version[0], firmwareDescription.safe_update_version[1], firmwareDescription.safe_update_version[2],
-                  versionString);
+                  ourVersion);
           errorMessage[errorMessageLen - 1] = '\0'; // Ensure null termination
         }
         return false;

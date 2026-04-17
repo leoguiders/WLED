@@ -628,10 +628,10 @@ void serializeState(JsonObject root, bool forPreset, bool includeBri, bool segme
 
 void serializeInfo(JsonObject root)
 {
-  root[F("ver")] = versionString;
+  root[F("ver")] = FPSTR(versionString);
   root[F("vid")] = VERSION;
   root[F("cn")] = F(WLED_CODENAME);
-  root[F("release")] = releaseString;
+  root[F("release")] = FPSTR(releaseString);
   root[F("repo")] = repoString;
   root[F("deviceId")] = getDeviceId();
 
